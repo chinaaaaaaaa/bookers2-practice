@@ -1,23 +1,102 @@
- <h1>User info</h1>
-  <td><%= image_tag @user.get_profile_image(100,100) %></td>
-  <td>name</td>
-  <p><%= @user.name %></p>
-  <td>introduction</td>
-  <p><%= @user.introduction %></p>
+ <% if @book.errors.any? %>
+ <h3><%= @book.errors.count %>errors prohibited this obj from being saved:</h3>
 
- <%= render 'books/new', book: @book %>
-
-<h1>Books</h1>
-<% @books.each do |book| %>
-<div>
-
-  <td></td>
-  <p><%= image_tag book.user.get_profile_image(100,100) %></p>
-
-  <td>Title</td>
-  <p><%= book.title %></p>
-  <td>Opinion</td>
-  <p><%= book.body %></p>
-
+  <ul>
+    <% @book.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
 <% end %>
+<main>
+<p><%= notice %></p>
+<div class="container">
+ <div class="row">
+  <div class="col-md-3">
+   <h2>User info</h2>
+   <p><%= image_tag @user.get_profile_image, size: "100x100" %></p>
+
+    <table class="table">
+     <tbody>
+      <tr>
+       <th>name</th>
+       <th><%= @user.name %></th>
+      </tr>
+      <tr>
+       <th>introduction</th>
+       <th><%= @user.introduction %></th>
+      </tr>
+
+      <tr>
+      <th>follows</th>
+      <th><%= link_to @user.followings.count, user_followings_path(@user) %></th>
+      </tr>
+      <tr>
+      <th>followers</th>
+      <th><%= link_to @user.followers.count, user_followers_path(@user) %></th>
+      </tr>
+
+     </tbody>
+    </table>
+
+  <div class="row">
+   <%= link_to edit_user_path(@user), class: "btn btn-outline-secondary btn-block", method: :get do %>
+   <i class="fas fa-user-cog"></i>
+   <% end %>
+  </div>
+
+  <h2>New book</h2>
+
+  <%= form_with model: @book do |f| %>
+
+   <h6>Title</h6>
+      <%= f.text_field :title %>
+    <h6>Opinion</h6>
+      <%= f.text_area :body %>
+    <p><%= f.submit "Create Book" %></p>
+  <% end %>
+  </div>
+
+
+  <div class="col-md-8 offset-md-1">
+
+   <h2>Books</h2>
+   <table class="table table-striped">
+    <thead>
+     <tr>
+      <th></th>
+      <th>Title</th>
+      <th>Opinion</th>
+
+    </tr>
+   </thead>
+
+  <tbody>
+   <% @books.each do |book| %>
+     <tr>
+      <td><%= link_to user_path(book.user.id) do %>
+        <%= image_tag book.user.get_profile_image, size: "100x100" %>
+        <% end %>
+      </td>
+
+      <td><%= link_to book.title, book_path(book) %></td>
+      <td><%= book.body %></td>
+
+       <% if book.user == current_user %>
+      <td><%= link_to "Edit", edit_book_path(book) %></td>
+      <td><%= link_to "Destroy", book_path(book),  method: :delete %></td>
+     <% else %>
+      <td></td>
+      <td></td>
+     <% end %>
+    <% end %>
+
+     </tr>
+     </tbody>
+
+
+
+    </table>
+   </div>
+  </div>
 </div>
+</main>
